@@ -4,7 +4,9 @@
 #include "Eigen/Dense"
 
 class MeasurementPackage {
-public:
+public: 
+
+  // time-stamp in micro-seconds
   long long timestamp_;
 
   enum SensorType{

@@ -12,16 +12,29 @@ using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
 class UKF {
+
 public:
 
   ///* initially set to false, set to true in first call of ProcessMeasurement
   bool is_initialized_;
-
+  
   ///* if this is false, laser measurements will be ignored (except for init)
   bool use_laser_;
 
   ///* if this is false, radar measurements will be ignored (except for init)
   bool use_radar_;
+
+  ///* State dimension
+  int n_x_;
+
+  ///* Augmented state dimension
+  int n_aug_;
+
+  ///* Sigma point spreading parameter
+  double lambda_;
+
+  ///* Weights of sigma points
+  VectorXd weights_;
 
   ///* state vector: [pos1 pos2 vel_abs yaw_angle yaw_rate] in SI units and rad
   VectorXd x_;
@@ -56,28 +69,28 @@ public:
   ///* Radar measurement noise standard deviation radius change in m/s
   double std_radrd_ ;
 
-  ///* Weights of sigma points
-  VectorXd weights_;
-
-  ///* State dimension
-  int n_x_;
-
-  ///* Augmented state dimension
-  int n_aug_;
-
-  ///* Sigma point spreading parameter
-  double lambda_;
-
   ///* the current NIS for radar
   double NIS_radar_;
 
   ///* the current NIS for laser
   double NIS_laser_;
 
+  ///* Radar measurement noise covariance matrix
+  MatrixXd R_radar_;
+
+  ///* Laser measurement noise covariance matrix
+  MatrixXd R_laser_;
+
+
   /**
    * Constructor
    */
-  UKF();
+  UKF(
+    double std_a,
+    double std_yawdd,
+    bool use_laser =true,
+    bool use_radar =true
+    );
 
   /**
    * Destructor
@@ -108,6 +121,16 @@ public:
    * @param meas_package The measurement at k+1
    */
   void UpdateRadar(MeasurementPackage meas_package);
+
+
+ private:
+
+  /**
+   * Transforms delta-angle to [-pi, pi] range
+   * @param dang [inout]
+   */
+  static void normalizeDang( double& dang );
+
 };
 
 #endif /* UKF_H */
